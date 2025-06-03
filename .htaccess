@@ -1,0 +1,52 @@
+# Enable compression for supported file types
+<IfModule mod_mime.c>
+  AddEncoding gzip .gz
+  AddType application/javascript .js.gz
+  AddType text/css .css.gz
+  AddType application/wasm .wasm
+  AddType application/wasm .wasm.gz  # Treat .wasm.gz files as application/wasm
+</IfModule>
+
+# Serve pre-compressed .gz files if available
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Check if browser accepts gzip
+  RewriteCond %{HTTP:Accept-encoding} gzip
+
+  # Serve .js.gz instead of .js
+  RewriteCond %{REQUEST_FILENAME}.gz -f
+  RewriteRule ^(.*)\.js$ $1.js.gz [QSA,L]
+
+  # Serve .css.gz instead of .css
+  RewriteCond %{REQUEST_FILENAME}.gz -f
+  RewriteRule ^(.*)\.css$ $1.css.gz [QSA,L]
+
+  # Serve .wasm.gz instead of .wasm
+  RewriteCond %{REQUEST_FILENAME}.gz -f
+  RewriteRule ^(.*)\.wasm$ $1.wasm.gz [QSA,L]
+</IfModule>
+
+# Force correct Content-Encoding header for .gz files
+<FilesMatch "\.(js|css|wasm)\.gz$">
+  Header set Content-Encoding gzip
+  Header set Cache-Control "public, max-age=31536000"
+</FilesMatch>
+
+# Force correct Content-Type for .wasm.gz (make sure this is correctly applied)
+<FilesMatch "\.wasm\.gz$">
+  Header set Content-Type application/wasm
+</FilesMatch>
+
+# Optional: Allow cross-origin resource sharing
+<FilesMatch "\.(js|css|wasm)(\.gz)?$">
+  Header set Access-Control-Allow-Origin "*"
+</FilesMatch>
+
+# Optional: Enable long-term caching
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType application/javascript "access plus 1 year"
+  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType application/wasm "access plus 1 year"
+</IfModule>
