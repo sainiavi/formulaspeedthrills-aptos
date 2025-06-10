@@ -461,50 +461,27 @@ let (current_addresses, current_scores, last_update, update_count) =
 let user_rank = leaderboard::get_user_rank(admin_address, user_address);
 ```
 
-### Top Players Contract Usage
+# Top Players Prize Contract
 
-```move
-// Initialize with top 3 players
-top_players::initialize(admin_account, gold_addr, silver_addr, bronze_addr);
+A Move smart contract on Aptos that manages a top 3 leaderboard with automatic APT coin rewards for Gold, Silver, and Bronze players.
 
-// Update all top players
-top_players::update_top_players(admin_account, new_gold, new_silver, new_bronze);
+## 🏆 Features
 
-// Update individual player
-top_players::update_player(admin_account, GOLD_BADGE, new_gold_player);
+- **Top 3 Leaderboard**: Tracks Gold, Silver, and Bronze players
+- **Automatic Rewards**: Distributes APT coins when updating leaderboard
+- **Admin Controls**: Only contract admin can update players and manage funds
+- **Safe Distribution**: Checks account registration before sending rewards
+- **Flexible Updates**: Option to update players with or without rewards
+- **Fund Management**: Deposit and withdraw capabilities for reward pool
 
-// Query top players
-let (gold, silver, bronze) = top_players::get_all_players(admin_address);
-```
+## 💰 Reward Structure
 
----
+| Position | Badge Type | Reward Amount |
+|----------|------------|---------------|
+| 🥇 Gold  | 1          | 0.5 APT       |
+| 🥈 Silver| 2          | 0.3 APT       |
+| 🥉 Bronze| 3          | 0.2 APT       |
+| **Total**|            | **1.0 APT**   |
 
-## Integration Patterns
-
-These contracts can work together effectively:
-
-1. **Periodic Updates**: Use the Leaderboard contract for detailed tracking and the Top Players contract for highlighting winners
-2. **Automated Promotion**: Query the Leaderboard contract to identify top 3 players and update the Top Players contract
-3. **Historical Analysis**: Use Leaderboard history to track player progression over time
-4. **Achievement System**: Combine both contracts to create a comprehensive ranking and recognition system
-
----
-
-## Security Considerations
-
-- Both contracts implement proper admin controls
-- Error handling prevents invalid states
-- Resource-based architecture ensures data integrity
-- Historical data is immutable once stored
-- Input validation prevents malformed data entry
-
----
-
-## Deployment Notes
-
-1. Deploy both contracts to the same or different accounts based on your needs
-2. Initialize each contract before use
-3. Ensure proper admin key management
-4. Consider implementing additional access controls if needed for production use
 
 **Made with ❤️ for Aptos Web3 community**
